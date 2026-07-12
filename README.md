@@ -19,10 +19,13 @@ Open the local URL shown in the terminal (normally `http://localhost:5173`).
 - Interactive progress charts and athlete comparison
 - Personal-best record board
 - Readiness tracking and testing notes
+- First-time athlete onboarding with clean empty states
+- Session history with editing and deletion
+- Validated JSON backup export and import
 - Local browser persistence and JSON backup export
 - Responsive desktop and mobile interface
 
-The included records are demonstration data. Use **Settings → Restore demo data** to reset the workspace.
+The app starts with a clean workspace. Your first recorded session becomes the baseline for future comparisons. Data stays in the current browser unless you export a backup.
 
 ## Production check
 
