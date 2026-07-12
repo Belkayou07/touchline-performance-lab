@@ -1,0 +1,16 @@
+import { useState } from 'react';
+import { Edit3, Trash2, X } from 'lucide-react';
+import { format } from 'date-fns';
+import { useApp } from '../store/AppContext';
+import { metrics } from '../data/metrics';
+import { MetricKey, TestSession } from '../types';
+import { Card, Empty } from '../components/UI';
+
+export function History(){
+ const {athletes,sessions,updateSession,deleteSession}=useApp();
+ const [athleteId,setAthleteId]=useState('all');
+ const [edit,setEdit]=useState<TestSession|null>(null);
+ const shown=[...sessions].filter(s=>athleteId==='all'||s.athleteId===athleteId).sort((a,b)=>b.date.localeCompare(a.date));
+ const save=()=>{if(edit){updateSession(edit);setEdit(null)}};
+ return <div className="page"><div className="page-heading"><div><span className="eyebrow">SESSION DATABASE</span><h1>Test history</h1><p>Review, correct or remove recorded testing sessions.</p></div><select value={athleteId} onChange={e=>setAthleteId(e.target.value)}><option value="all">All athletes</option>{athletes.map(a=><option value={a.id} key={a.id}>{a.name}</option>)}</select></div>{!shown.length?<Card><Empty text="No test sessions yet. Your first baseline will appear here."/></Card>:<div className="history-list">{shown.map(s=>{const athlete=athletes.find(a=>a.id===s.athleteId);const recorded=metrics.filter(m=>s.values[m.key]!=null);return <Card className="history-row" key={s.id}><div className="history-date"><b>{format(new Date(s.date),'dd')}</b><span>{format(new Date(s.date),'MMM yyyy')}</span></div><div className="history-person"><b>{athlete?.name||'Unknown athlete'}</b><span>Readiness {s.readiness}/10 · {recorded.length} measurements</span></div><div className="history-values">{recorded.slice(0,3).map(m=><span key={m.key}>{m.short} <b>{s.values[m.key]} {m.unit}</b></span>)}{recorded.length>3&&<span>+{recorded.length-3} more</span>}</div><div className="history-actions"><button className="icon-btn" onClick={()=>setEdit({...s,values:{...s.values}})} title="Edit session"><Edit3/></button><button className="icon-btn delete-icon" onClick={()=>confirm('Delete this session permanently?')&&deleteSession(s.id)} title="Delete session"><Trash2/></button></div></Card>})}</div>}{edit&&<div className="modal-bg"><div className="modal session-modal"><button className="close-modal" onClick={()=>setEdit(null)}><X/></button><span className="eyebrow">CORRECT SESSION</span><h2>Edit test results</h2><div className="form-grid"><label>Test date<input type="date" value={edit.date} onChange={e=>setEdit({...edit,date:e.target.value})}/></label><label>Readiness (1–10)<input type="number" min="1" max="10" value={edit.readiness} onChange={e=>setEdit({...edit,readiness:Math.max(1,Math.min(10,+e.target.value))})}/></label></div><div className="edit-metrics">{metrics.map(m=><label key={m.key}><span>{m.name}</span><div className="unit-input"><input type="number" min="0" step="any" value={edit.values[m.key]??''} onChange={e=>setEdit({...edit,values:{...edit.values,[m.key]:e.target.value===''?undefined:+e.target.value}})}/><span>{m.unit}</span></div></label>)}</div><label className="notes">Session notes<textarea value={edit.notes} onChange={e=>setEdit({...edit,notes:e.target.value})}/></label><button className="primary full" onClick={save}>Save corrections</button></div></div>}</div>
+}
