@@ -1,0 +1,32 @@
+# Touchline Performance Lab
+
+A local-first football athlete testing and progress dashboard for weekly physical assessments.
+
+## Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+Open the local URL shown in the terminal (normally `http://localhost:5173`).
+
+## Included
+
+- Athlete profiles and squad management
+- Guided weekly testing workflow
+- Speed, power, strength, endurance, recovery and body metrics
+- Interactive progress charts and athlete comparison
+- Personal-best record board
+- Readiness tracking and testing notes
+- Local browser persistence and JSON backup export
+- Responsive desktop and mobile interface
+
+The included records are demonstration data. Use **Settings → Restore demo data** to reset the workspace.
+
+## Production check
+
+```bash
+npm run build
+npm run preview
+```

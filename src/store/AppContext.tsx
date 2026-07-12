@@ -1,0 +1,6 @@
+import { createContext,useContext,useEffect,useState,ReactNode } from 'react';
+import { Athlete,TestSession } from '../types'; import { seedAthletes,seedSessions } from '../data/seed';
+interface Store {athletes:Athlete[];sessions:TestSession[];addAthlete:(a:Athlete)=>void;updateAthlete:(a:Athlete)=>void;addSession:(s:TestSession)=>void;deleteSession:(id:string)=>void;reset:()=>void}
+const C=createContext<Store|null>(null); const KEY='touchline-data-v1';
+export function AppProvider({children}:{children:ReactNode}){const saved=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch{return null}};const initial=saved();const [athletes,setAthletes]=useState<Athlete[]>(initial?.athletes||seedAthletes);const [sessions,setSessions]=useState<TestSession[]>(initial?.sessions||seedSessions);useEffect(()=>localStorage.setItem(KEY,JSON.stringify({athletes,sessions})),[athletes,sessions]);return <C.Provider value={{athletes,sessions,addAthlete:a=>setAthletes(x=>[...x,a]),updateAthlete:a=>setAthletes(x=>x.map(y=>y.id===a.id?a:y)),addSession:s=>setSessions(x=>[...x,s]),deleteSession:id=>setSessions(x=>x.filter(s=>s.id!==id)),reset:()=>{setAthletes(seedAthletes);setSessions(seedSessions)}}}>{children}</C.Provider>}
+export const useApp=()=>{const c=useContext(C);if(!c)throw Error('Missing provider');return c};
